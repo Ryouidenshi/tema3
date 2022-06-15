@@ -9,6 +9,8 @@
 ![image](https://user-images.githubusercontent.com/55030527/173919726-dc5d873c-d03b-4a7b-9596-a880db95a7e1.png)
 Диаграмма последовательности:
 ![image](https://user-images.githubusercontent.com/55030527/173920865-2bf88b7f-6eb4-4553-a80d-831d84281810.png)
+SLA:
+![image](https://user-images.githubusercontent.com/55030527/173922945-ee1002da-bf36-4414-9598-0eb424ae9cb2.png)
 
 
 Функциональные требования:
