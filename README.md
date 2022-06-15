@@ -5,3 +5,6 @@
 ![image](https://user-images.githubusercontent.com/55030527/173916111-4d6cf445-350c-4eab-a1e5-f7245bdd0b1f.png)
 Компоненты:
 ![image](https://user-images.githubusercontent.com/55030527/173917090-0497b386-9391-417a-a497-a349c302c2ef.png)
+Диграмма классов:
+![image](https://user-images.githubusercontent.com/55030527/173919726-dc5d873c-d03b-4a7b-9596-a880db95a7e1.png)
+
