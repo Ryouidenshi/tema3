@@ -11,10 +11,10 @@ class Developers extends Model
 
     public $user_id = 'userId';
 
-//    public function getUser()
-//    {
-//        return User::where('id', $this->user_id)->first();
-//    }
+    public function getUser()
+    {
+        return User::where('id', $this->user_id)->first();
+    }
 
     public function courses()
     {

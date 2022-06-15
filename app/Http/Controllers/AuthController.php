@@ -7,95 +7,63 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function register(Request $request)
     {
-        $this->middleware('auth:api', ['except' => ['login', 'registration']]);
+        $fields = $request->validate([
+                'name' => 'required|string',
+                'email' => 'required|string|unique:users,email',
+                'password' => 'required|string|confirmed'
+            ]
+        );
+
+        $user = User::create(
+            [
+                'name' => $fields['name'],
+                'email' => $fields['email'],
+                'password' => bcrypt($fields['password'])
+            ]
+        );
+
+        $token = $user->createToken('myapptoken')->plainTextToken;
+
+        $response = [
+            'user' => $user,
+            'token' => $token
+        ];
+
+        return response($response, 201);
     }
 
-    /**
-     * Get a JWT via given credentials.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function login()
-    {
-        $credentials = request(['email', 'password']);
+    public function logout(Request $request){
+        auth()->user()->tokens()->delete();
 
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+        return[
+            'message'=> 'Logged out'
+        ];
+    }
+
+    public function login(Request $request){
+        $fields = $request->validate([
+                'email' => 'required|string',
+                'password' => 'required|string'
+            ]
+        );
+
+        $user = User::where('email', $fields['email'])->first();
+
+        if(!$user || !Hash::check($fields['password'], $user->password)){
+            return response(
+                ['message' => 'Bad creds'], 401
+            );
         }
 
-        return $this->respondWithToken($token);
-    }
+        $token = $user->createToken('myapptoken')->plainTextToken;
 
-    /**
-     * User registration
-     */
-    public function registration()
-    {
-        $name = request('name');
-        $email = request('email');
-        $password = request('password');
+        $response = [
+            'user' => $user,
+            'token' => $token
+        ];
 
-        $user = new User();
-        $user->name = $name;
-        $user->email = $email;
-        $user->password = Hash::make($password);
-        $user->save();
-
-        return response()->json(['message' => 'Successfully registration!']);
-    }
-
-    /**
-     * Get the authenticated User.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function me()
-    {
-        return response()->json(auth()->user());
-    }
-
-    /**
-     * Log the user out (Invalidate the token).
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function logout()
-    {
-        auth()->logout();
-
-        return response()->json(['message' => 'Successfully logged out']);
-    }
-
-    /**
-     * Refresh a token.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function refresh()
-    {
-        return $this->respondWithToken(auth()->refresh());
-    }
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    protected function respondWithToken($token)
-    {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
-        ]);
+        return response($response, 201);
     }
 }

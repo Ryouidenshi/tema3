@@ -8,6 +8,7 @@ use App\Models\Entities\Developers;
 use App\Models\Entities\User;
 use App\Models\Entities\UserCourses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use function Sodium\add;
 
 class UserController extends Controller
@@ -17,23 +18,16 @@ class UserController extends Controller
         $this->middleware('auth:api', ['except' => []]);
     }
 
-    public function getDevelopers()
-    {
-        $result = array();
-
-        foreach (Developers::all() as $db_developer) {
-            $resultDeveloper = User::find($db_developer->userId);
-            $resultDeveloper->mentor = User::find($db_developer->mentor_id);
-            $coursesArray = array();
-            foreach (UserCourses::where('developer_user_id', $db_developer->userId)->get() as $userCourse) {
-                $course = Course::find($userCourse->course_id);
-                array_push($coursesArray, $course);
-            }
-            $resultDeveloper->courses = $coursesArray;
-            array_push($result, $resultDeveloper);
-        }
-
-        return response()->json($result, 200);
+    public function deleteDevoloperFromDevolopment(Request $request){
+        DB::table('developer')->where('development_id', '=', $request->input('id'));
+        $user = User::find($request->input('id'));
+        DB::table('developer')->delete($request->input('id'));
+        return response([
+            'message'=>'user '. $user->name . ' successfully deleted'
+        ]);
     }
 
+    public function getDevoloperInDevopment(Request $request){
+        return response(['devoloper'=>DB::table('devolopment')->where('devoloper_id', '=', $request->input('id'))->get()]);
+    }
 }
